@@ -1,5 +1,5 @@
 {
-  "name": "@k8slens/carbonetes-lens-extension",
+  "name": "carbonetes-lens-extension",
   "publisher": "Carbonetes",
   "version": "0.0.1",
   "description": "Lens Carbonetes extension",
