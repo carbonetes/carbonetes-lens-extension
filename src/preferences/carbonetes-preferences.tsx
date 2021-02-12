@@ -67,6 +67,20 @@ export class CarbonetesPreferenceInput extends React.Component<Props, State> {
             isSignInError : true
           })
         }
+        request.getRegistries({
+          headers: {
+            'Authorization': `Bearer ${carbonetesStore.user.auth.token}`
+          },
+          params: {
+            email
+          }
+        }).then(response => {
+          carbonetesStore.registries = response.data;
+        }).catch(error => {
+          Component.Notifications.error(
+            <div>{error.response.data}.</div>
+          )
+        });
       }).catch(error => {
         carbonetesStore.enabled   = false;
         this.setState({

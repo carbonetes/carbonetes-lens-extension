@@ -44,8 +44,7 @@ class PolicyEvaluation extends React.PureComponent<Props> {
     const { isAnalyzed } = analysis;
 
     let policyEvaluation: any = {}
-
-    if (isAnalyzed) {
+    if (isAnalyzed && (analysis.result && analysis.result.repoImageEnvironments && analysis.result.repoImageEnvironments.length > 0)) {
       policyEvaluation = {
         ...analysis.result.repoImageEnvironments[0],
         policyEvaluationSummary : this.getPolicyEvaluationSummary(analysis.result.repoImageEnvironments[0].policyEvaluationLatest.policyEvaluationResults)

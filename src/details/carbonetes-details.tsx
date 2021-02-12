@@ -7,8 +7,7 @@ import CompleteAnalysis from './complete-analysis';
 import Vulnerabilities from './vulnerabilities';
 import { 
   REGISTRY,
-  IMAGE_NAME,
-  NAMESPACES
+  IMAGE_NAME
 } from '../utils/constants'
 import "./carbonetes-details.scss";
 import { observer } from "mobx-react";

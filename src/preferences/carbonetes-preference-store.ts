@@ -6,6 +6,7 @@ export type CarbonetesStoreModel = {
   user: UserModel;
   analysis: AnalysisModel;
   analyses: AnalysesModel;
+  registries: RegistriesModel;
 }
 
 export type UserModel = {
@@ -26,6 +27,9 @@ export type AnalysisModel = {
 
 export type AnalysesModel = AnalysisModel[]
 
+export type RegistriesModel = RegistriesModel[]
+
+
 export class CarbonetesStore extends Store.ExtensionStore<CarbonetesStoreModel>{
   @observable enabled: boolean = false;
   @observable user: UserModel = {
@@ -43,6 +47,7 @@ export class CarbonetesStore extends Store.ExtensionStore<CarbonetesStoreModel>{
     isAnalyzed: false,
   }
   @observable analyses: AnalysesModel = [];
+  @observable registries: RegistriesModel = [];
 
   private constructor() {
     super({});
@@ -80,11 +85,12 @@ export class CarbonetesStore extends Store.ExtensionStore<CarbonetesStoreModel>{
     };
   }
 
-  @action protected fromStore({ enabled, user, analysis, analyses }: CarbonetesStoreModel): void {
+  @action protected fromStore({ enabled, user, analysis, analyses, registries }: CarbonetesStoreModel): void {
     this.enabled = enabled;
     this.user = user;
     this.analysis = analysis;
     this.analyses = analyses;
+    this.registries = registries;
   }
 
   toJSON(): CarbonetesStoreModel {
@@ -92,7 +98,8 @@ export class CarbonetesStore extends Store.ExtensionStore<CarbonetesStoreModel>{
       enabled: this.enabled,
       user: this.user,
       analysis: this.analysis,
-      analyses: this.analyses
+      analyses: this.analyses,
+      registries: this.registries
     }, {
       recurseEverything: true
     });
