@@ -21,8 +21,6 @@ export class CarbonetesPreferenceInput extends React.Component<Props, State> {
   constructor(props: { carbonetesStore: CarbonetesStore; } | Readonly<{ carbonetesStore: CarbonetesStore; }>) {
     super(props);
     this.state = {
-      email         : '',
-      password      : '',
       isSigningIn   : false,
       isSignInError : false
     };
@@ -53,20 +51,14 @@ export class CarbonetesPreferenceInput extends React.Component<Props, State> {
         username  : email,
         password  : password
       }).then((response: any) => {
-        if (response.status === 200) {
-          const user = {
-            auth    : response.data,
-            email   : email,
-            password: password,
-          };
+        const user = {
+          auth    : response.data,
+          email   : email,
+          password: password,
+        };
 
-          carbonetesStore.signIn(user);
-        } else {
-          carbonetesStore.enabled   = false;
-          this.setState({
-            isSignInError : true
-          })
-        }
+        carbonetesStore.signIn(user);
+
         request.getRegistries({
           headers: {
             'Authorization': `Bearer ${carbonetesStore.user.auth.token}`
@@ -82,10 +74,9 @@ export class CarbonetesPreferenceInput extends React.Component<Props, State> {
           )
         });
       }).catch(error => {
-        carbonetesStore.enabled   = false;
-        this.setState({
-          isSignInError : true
-        })
+        Component.Notifications.error(
+          <div> Sorry, the credentials you entered is not valid.</div>
+        )
       }).finally(() => {
         this.setState({
           isSigningIn : false

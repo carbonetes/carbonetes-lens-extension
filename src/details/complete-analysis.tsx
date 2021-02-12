@@ -1,7 +1,7 @@
 import { Component } from "@k8slens/extensions";
 import React from "react";
 import "./carbonetes-details.scss";
-import { getAnalysisStatus, getSeverityStyle, getStatusStyle } from '../utils/helper';
+import { getSeverityStyle } from '../utils/helper';
 import { AnalysisModel } from '../preferences/carbonetes-preference-store';
 
 type Props = {
@@ -12,58 +12,56 @@ type Props = {
 class CompleteAnalysis extends React.PureComponent<Props> {
 
   // Creates analysis object for table's row
-  createAnalysis = (analyzer: string, status: string, summary: any): any => {
+  createAnalysis = (analyzer: string, summary: any): any => {
     const analysis = {
       analyzer, 
-      status, 
       summary 
     }
 
     return analysis
   }
 
-  // Creates Initial Analyses with not_anaylzed status, specify status by adding param
-  createInitialAnalyses = (status = 'not_analyzed') => {
-    const analyses = [
-      this.createAnalysis('Vulnerability', status, null),
-      this.createAnalysis('Software Composition', status, null),
-      this.createAnalysis('Malware', status, null),
-      this.createAnalysis('License', status, null),
-      this.createAnalysis('Secrets', status, null)
-    ];
-
-    return analyses;
-  }
-
   // Creates analyses based from response of getAnalysisResult API
   createAnalyses = (result: any) => {
-    const imageAnalysis         = result.imageAnalysisLatest;
-    const imageAnalysisStatus   = imageAnalysis.engineA;
-    const imageAnalysisSummary  = this.getVulnerabilitySummary(imageAnalysis.vulnerabilities);
 
-    const scAnalysis        = result.scaLatest.analysis;
-    const scAnalysisStatus  = scAnalysis.status;
-    const scAnalysisSummary = scAnalysis;
+    let analyses;
+    if (result) {
+      // Image Analysis
+      const imageAnalysis           = result.imageAnalysisLatest;
+      const imageAnalysisSummary    = imageAnalysis ? this.getVulnerabilitySummary(imageAnalysis.vulnerabilities) : null;
 
-    const malwareAnalysis         = result.malwareAnalysisLatest;
-    const malwareAnalysisStatus   = malwareAnalysis.status;
-    const malwareAnalysisSummary  = malwareAnalysis.scanResult;
+      // Software Composition Analysis
+      const scAnalysis              = result.scaLatest;
+      const scAnalysisSummary       = scAnalysis ? scAnalysis.analysis : null;
 
-    const licenseFinder         = result.licenseFinderLatest;
-    const licenseFinderStatus   = licenseFinder.status;
-    const licenseFinderSummary  = licenseFinder.imageDependencies;
+      // // Malware Analysis
+      // const malwareAnalysis         = result.malwareAnalysisLatest;
+      // const malwareAnalysisSummary  = malwareAnalysis ? malwareAnalysis.scanResult : null;
 
-    const secretAnalysis        = result.secretAnalysisLatest;
-    const secretAnalysisStatus  = secretAnalysis.status;
-    const secretAnalysisSummary = secretAnalysis.secrets;
+      // License Finder
+      const licenseFinder           = result.licenseFinderLatest;
+      const licenseFinderSummary    = licenseFinder ? licenseFinder.imageDependencies.flatMap((dependency: any) => dependency.licenses).flatMap((license: any) => license.licenseName).filter((v: any, i: any, a: any) => a.indexOf(v) === i) : null;
 
-    const analyses = [
-      this.createAnalysis('Vulnerability', imageAnalysisStatus, imageAnalysisSummary),
-      this.createAnalysis('Software Composition', scAnalysisStatus, scAnalysisSummary),
-      this.createAnalysis('Malware', malwareAnalysisStatus, malwareAnalysisSummary),
-      this.createAnalysis('License', licenseFinderStatus, licenseFinderSummary),
-      this.createAnalysis('Secrets', secretAnalysisStatus, secretAnalysisSummary)
-    ];
+      // Secret Analysis
+      const secretAnalysis          = result.secretAnalysisLatest;
+      const secretAnalysisSummary   = secretAnalysis ? secretAnalysis.secrets : null;
+
+      analyses = [
+        this.createAnalysis('Vulnerability', imageAnalysisSummary),
+        this.createAnalysis('Software Composition', scAnalysisSummary),
+        // this.createAnalysis('Malware', malwareAnalysisSummary),
+        this.createAnalysis('License', licenseFinderSummary),
+        this.createAnalysis('Secrets', secretAnalysisSummary)    
+      ];
+    } else {
+      analyses = [
+        this.createAnalysis('Vulnerability', null),
+        this.createAnalysis('Software Composition', null),
+        // this.createAnalysis('Malware', null),
+        this.createAnalysis('License', null),
+        this.createAnalysis('Secrets', null)
+      ];
+    }
 
     return analyses;
   }
@@ -171,39 +169,39 @@ class CompleteAnalysis extends React.PureComponent<Props> {
       })
 
       component.length === 0 && component.push(<p>No vulnerabilities found</p>);
-    } else if (analysis.analyzer === 'Malware') {
-      const malwareCount = analysis.summary.infectedFiles.length;
-      const noun = malwareCount > 1 ? 'threats' : 'threat';
+    // } else if (analysis.analyzer === 'Malware') {
+    //   const malwareCount = analysis.summary.infectedFiles.length;
+    //   const noun = malwareCount > 1 ? 'threats' : 'threat';
 
-      if (malwareCount > 0) {
-        component.push(
-          <Component.Badge
-            label={`${malwareCount} ${noun} found`}
-            className={malwareCount > 0 && 'threat'}
-            tooltip={(
-              <ul>
-                <p><b>Threats</b></p>
-                  <table>
-                    <tr>
-                      <th>File</th>
-                      <th>Virus</th>
-                    </tr>
-                    {
-                      analysis.summary.infectedFiles.map((infectedFile: any) => 
-                        <tr>
-                          <td>{infectedFile.file_name}</td>
-                          <td>{infectedFile.virus}</td>
-                        </tr>
-                      )
-                    }
-                  </table>
-              </ul>  
-            )}
-          />
-        )
-      } else {
-        component.push(<p className="noThreats">No threats found</p>);
-      }
+    //   if (malwareCount > 0) {
+    //     component.push(
+    //       <Component.Badge
+    //         label={`${malwareCount} ${noun} found`}
+    //         className={malwareCount > 0 && 'threat'}
+    //         tooltip={(
+    //           <ul>
+    //             <p><b>Threats</b></p>
+    //               <table>
+    //                 <tr>
+    //                   <th>File</th>
+    //                   <th>Virus</th>
+    //                 </tr>
+    //                 {
+    //                   analysis.summary.infectedFiles.map((infectedFile: any) => 
+    //                     <tr>
+    //                       <td>{infectedFile.file_name}</td>
+    //                       <td>{infectedFile.virus}</td>
+    //                     </tr>
+    //                   )
+    //                 }
+    //               </table>
+    //           </ul>  
+    //         )}
+    //       />
+    //     )
+    //   } else {
+    //     component.push(<p className="noThreats">No threats found</p>);
+    //   }
     } else if (analysis.analyzer === 'License') {
       const licenseCount = analysis.summary.length;
       const noun = licenseCount > 1 ? 'licenses' : 'license';
@@ -217,8 +215,8 @@ class CompleteAnalysis extends React.PureComponent<Props> {
               <ul>
                 <p><b>Licenses</b></p>
                 {
-                  analysis.summary.map((imageDependency: any) => 
-                    <li>{imageDependency.dependencyName}</li>
+                  analysis.summary.map((license: any) => 
+                    <li>{license}</li>
                   )
                 }
               </ul>  
@@ -238,14 +236,9 @@ class CompleteAnalysis extends React.PureComponent<Props> {
 
   render() {
     const { analysis, isAnalyzing } = this.props;
-    const { isAnalyzed, result } = analysis;
+    const { result } = analysis;
 
-    let analyses = this.createInitialAnalyses();
-    if (isAnalyzing) {
-      analyses = this.createInitialAnalyses('analyzing');
-    } else if (isAnalyzed) {
-      analyses = this.createAnalyses(result);
-    }
+     const analyses = this.createAnalyses(result);
 
     return (
       <>
@@ -258,7 +251,6 @@ class CompleteAnalysis extends React.PureComponent<Props> {
           >
             <Component.TableHead showTopLine={true}>
               <Component.TableCell>Analyzers</Component.TableCell>
-              <Component.TableCell>Status</Component.TableCell>
               <Component.TableCell>Summary</Component.TableCell>
             </Component.TableHead>
             {
@@ -271,12 +263,6 @@ class CompleteAnalysis extends React.PureComponent<Props> {
                       {
                         analysis.analyzer
                       }
-                    </Component.TableCell>
-                    <Component.TableCell>
-                      <Component.Badge
-                        label={getAnalysisStatus(analysis.status)}
-                        className={`whiteText ${getStatusStyle(analysis.status)}`}
-                      />
                     </Component.TableCell>
                     <Component.TableCell className={"flex gaps"}>
                       {

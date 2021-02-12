@@ -1,25 +1,38 @@
 import axiosInstance from './axios'
 
-const CARBONETES_API = 'https://api-vulnerability.carbonetes.com';
 const CARBONETES_WRAPPER_API = 'https://api.carbonetes.com';
 
 const request = {
   signIn: (data: any) => axiosInstance.post(
-    CARBONETES_API + '/auth/signin',
+    CARBONETES_WRAPPER_API + '/auth/signin',
     data
   ),
-  analyzeImage: (data: any) => axiosInstance.post(
-    CARBONETES_WRAPPER_API + '/analyze',
-    data
+  getRegistries: (config: any) => axiosInstance.get(
+    CARBONETES_WRAPPER_API + '/api/v1/company-registry/by_email',
+    config
   ),
-  getAnalysisResult: (data: any) => axiosInstance.post(
-    CARBONETES_WRAPPER_API + '/get-result',
-    data
+  reloadRegistry: (config: any) => axiosInstance.post(
+    CARBONETES_WRAPPER_API + '/api/v1/repo-image/reload_by_registryUri',
+    {
+      ...config.data,
+    },
+    {
+      headers: config.headers
+    }
+
   ),
   checkAnalysisResult: (config: any) => axiosInstance.get(
     CARBONETES_WRAPPER_API + '/api/v1/analysis/full-tag',
     config
-  )
+  ),
+  analyzeImage: (data: any) => axiosInstance.post(
+    CARBONETES_WRAPPER_API + '/api/v1/analysis/analyze',
+    data
+  ),
+  getAnalysisResult: (data: any) => axiosInstance.post(
+    CARBONETES_WRAPPER_API + '/api/v1/analysis/get-result',
+    data
+  ),
 }
 
 export default request;

@@ -61,7 +61,10 @@ class Vulnerabilities extends React.PureComponent<Props> {
                       </Component.TableCell>
                       <Component.TableCell>
                         {
-                          vulnerability.package_name
+                          vulnerability.package_name ? 
+                            vulnerability.package_name
+                          :
+                            '_'
                         }
                       </Component.TableCell>
                       <Component.TableCell>
