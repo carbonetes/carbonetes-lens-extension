@@ -5,8 +5,6 @@ This is a [Lens](https://k8slens.dev/) Extension for [Carbonetes](https://carbon
 [![Screenshot](docs/images/example.png)](https://youtu.be/X-bhVwmp2l4)
 
 ## Prerequisites
-
-* You need to have [node](https://nodejs.org/en/) and [npm](https://nodejs.org/en/) installed on your system. It is recommended to use the node version used for Lens development itself which is documented [here](https://github.com/lensapp/lens#development).
 * Install [Lens](https://github.com/lensapp/lens/releases/latest) application.
 * You need to have a [Carbonetes](https://console.carbonetes.com) account. Sign Up [here](https://console.carbonetes.com/register).
 
@@ -24,6 +22,8 @@ Image Analysis can only be used on images that are in container registries added
    **Installed Extensions**. Click **Enable** to enable it.
 
 #### From Source (Linux, macOS)
+* You need to have [node](https://nodejs.org/en/) and [npm](https://nodejs.org/en/) installed on your system. It is recommended to use the node version used for Lens development itself which is documented [here](https://github.com/lensapp/lens#development).
+
 1. Clone the source code to the ~/.k8slens/extensions/carbonetes-lens-extensions directory:
 ```sh
 mkdir -p ~/.k8slens/extensions
