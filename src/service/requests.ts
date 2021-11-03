@@ -7,12 +7,18 @@ const request = {
     CARBONETES_WRAPPER_API + '/auth/signin',
     data
   ),
+
+  getAndReloadCompayRegistry: (config: any) => axiosInstance.get(
+    CARBONETES_WRAPPER_API + '/api/v1/company_registry/by_uri',
+    config
+  ),
+
   getRegistries: (config: any) => axiosInstance.get(
-    CARBONETES_WRAPPER_API + '/api/v1/company-registry/by_email',
+    CARBONETES_WRAPPER_API + '/api/v1/company_registry',
     config
   ),
   reloadRegistry: (config: any) => axiosInstance.post(
-    CARBONETES_WRAPPER_API + '/api/v1/repo-image/reload_by_registryUri',
+    CARBONETES_WRAPPER_API + '/api/v1/company_registry/reload_by_registryUri',
     {
       ...config.data,
     },
@@ -26,7 +32,7 @@ const request = {
     config
   ),
   analyzeImage: (data: any) => axiosInstance.post(
-    CARBONETES_WRAPPER_API + '/api/v1/analysis/analyze',
+    CARBONETES_WRAPPER_API + '/api/v1/analysis/',
     data
   ),
   getAnalysisResult: (data: any) => axiosInstance.post(
