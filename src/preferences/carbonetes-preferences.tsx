@@ -21,6 +21,8 @@ export class CarbonetesPreferenceInput extends React.Component<Props, State> {
   constructor(props: { carbonetesStore: CarbonetesStore; } | Readonly<{ carbonetesStore: CarbonetesStore; }>) {
     super(props);
     this.state = {
+      email         : '',
+      password      : '',
       isSigningIn   : false,
       isSignInError : false
     };
