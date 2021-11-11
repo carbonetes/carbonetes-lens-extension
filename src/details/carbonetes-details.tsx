@@ -24,7 +24,6 @@ type Props = {
 
 type State = {
   isLoading : boolean,
-  hasError: boolean
 }
 
 @observer
@@ -35,7 +34,6 @@ export class CarbonetesDetails extends React.Component<Props, State> {
 
     this.state = {
       isLoading : false,
-      hasError: false
     };
   };
 
@@ -172,13 +170,6 @@ export class CarbonetesDetails extends React.Component<Props, State> {
       Component.Notifications.error(
         <div>{error.response.data}.</div>
       )
-      setTimeout(() => {
-        this.setState({
-          hasError: true
-        });
-        carbonetesStore.resetAnalysis();
-      }, 1)
-      
     });
   }
 
@@ -255,12 +246,9 @@ export class CarbonetesDetails extends React.Component<Props, State> {
 
   render() {
     const { deployment, carbonetesStore } = this.props;
-    const { hasError } = this.state;
     const { object } = deployment;
     const image = this.getImage(object);
-    if (hasError) return (
-      <></>
-    );
+
     if (carbonetesStore.enabled && carbonetesStore.registries.find((registry: any) => registry.registryUri.includes(image.registry))) {
       return(
         <div>

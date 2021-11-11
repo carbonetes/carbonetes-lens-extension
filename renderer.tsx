@@ -2,12 +2,7 @@ import { LensRendererExtension, Component } from "@k8slens/extensions";
 import { CarbonetesDetails, CarbonetesDetailsProps } from "./src/details/carbonetes-details"
 import { carbonetesStore } from "./src/preferences/carbonetes-preference-store";
 import { CarbonetesPreferenceHint, CarbonetesPreferenceInput } from "./src/preferences/carbonetes-preferences";
-import React from "react"
-
-const Icon = (props: Component.IconProps) => {
-  return <Component.Icon {...props} material="lock" tooltip={'Carbonetes Extension'}/>
-}
-
+import React from "react";
 export default class ExampleExtension extends LensRendererExtension {
   appPreferences = [
     {
