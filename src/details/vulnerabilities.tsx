@@ -1,7 +1,9 @@
-import { Component } from "@k8slens/extensions";
+import { Renderer } from "@k8slens/extensions";
 import React from "react";
 import "./carbonetes-details.scss";
 import { getSeverityStyle } from '../utils/helper';
+
+const { Component } = Renderer;
 
 type Props = {
   vulnerabilities: []

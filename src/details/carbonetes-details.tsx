@@ -1,4 +1,4 @@
-import { Component, K8sApi, Util } from "@k8slens/extensions";
+import { Renderer } from "@k8slens/extensions";
 import React from "react";
 import moment from "moment";
 import { CarbonetesStore } from "../preferences/carbonetes-preference-store";
@@ -14,12 +14,12 @@ import "./carbonetes-details.scss";
 import { observer } from "mobx-react";
 import { getAnalysisStatus, getStatusStyle } from "../utils/helper";
 
-export interface CarbonetesDetailsProps extends Component.KubeObjectDetailsProps<K8sApi.Deployment> {
+export interface CarbonetesDetailsProps extends Renderer.Component.KubeObjectDetailsProps<Renderer.K8sApi.Deployment> {
 }
 
 type Props = {
   carbonetesStore: CarbonetesStore,
-  deployment : Component.KubeObjectDetailsProps<K8sApi.Deployment>
+  deployment : Renderer.Component.KubeObjectDetailsProps<Renderer.K8sApi.Deployment>
 }
 
 type State = {
@@ -81,8 +81,8 @@ export class CarbonetesDetails extends React.Component<Props, State> {
     }
   }
 
-  // Get image registry and image tag from KubeObjectDetailsProps<K8sApi.Deployment>
-  getImage: any = (deployment: K8sApi.Deployment, property: String = null) => {
+  // Get image registry and image tag from KubeObjectDetailsProps<Renderer.K8sApi.Deployment>
+  getImage: any = (deployment: Renderer.K8sApi.Deployment, property: String = null) => {
     const containers = deployment.spec.template.spec.containers;
 
     let image = {
@@ -160,14 +160,14 @@ export class CarbonetesDetails extends React.Component<Props, State> {
     
           carbonetesStore.analyses = newAnalyses;
         }).catch(error => {
-          Component.Notifications.error(
+          Renderer.Component.Notifications.error(
             <div>{error.response.data}.</div>
           )
           carbonetesStore.resetAnalysis();
         });
       }
     }).catch(error => {
-      Component.Notifications.error(
+      Renderer.Component.Notifications.error(
         <div>{error.response.data}.</div>
       )
     });
@@ -196,7 +196,7 @@ export class CarbonetesDetails extends React.Component<Props, State> {
       carbonetesStore.analyses            = newAnalyses;
 
     }).catch(error => {
-      Component.Notifications.error(
+      Renderer.Component.Notifications.error(
         <div>{error.response.data}.</div>
       )
     }).finally(() => {
@@ -237,7 +237,7 @@ export class CarbonetesDetails extends React.Component<Props, State> {
 
       this.getAnalysisResult(response.data);
     }).catch(error => {
-      Component.Notifications.error(
+      Renderer.Component.Notifications.error(
         <div>{error.response.data}.</div>
       )
       carbonetesStore.resetAnalysis();
@@ -252,33 +252,33 @@ export class CarbonetesDetails extends React.Component<Props, State> {
     if (carbonetesStore.enabled && carbonetesStore.registries.find((registry: any) => registry.registryUri.includes(image.registry))) {
       return(
         <div>
-          <Component.DrawerTitle title="Image" />
-          <Component.DrawerItem name="Registry">
+          <Renderer.Component.DrawerTitle title="Image" />
+          <Renderer.Component.DrawerItem name="Registry">
             {image.registry}
-          </Component.DrawerItem>
-          <Component.DrawerItem name="Image">
+          </Renderer.Component.DrawerItem>
+          <Renderer.Component.DrawerItem name="Image">
             {image.name}
-          </Component.DrawerItem>
-          <Component.DrawerItem name="Analyzed At">
+          </Renderer.Component.DrawerItem>
+          <Renderer.Component.DrawerItem name="Analyzed At">
             {
               carbonetesStore.analysis.result && carbonetesStore.analysis.result.comprehensiveAnalysisLatest ? 
                 moment.unix(carbonetesStore.analysis.result.comprehensiveAnalysisLatest.whenAdded).fromNow()
               :
                 <p>_</p>
             }
-          </Component.DrawerItem>
-          <Component.DrawerItem name="Status">
+          </Renderer.Component.DrawerItem>
+          <Renderer.Component.DrawerItem name="Status">
             {
               carbonetesStore.analysis.result && carbonetesStore.analysis.result.comprehensiveAnalysisLatest ? 
-                <Component.Badge
+                <Renderer.Component.Badge
                   label={getAnalysisStatus(carbonetesStore.analysis.result.comprehensiveAnalysisLatest.status)}
                   className={`whiteText ${getStatusStyle(carbonetesStore.analysis.result.comprehensiveAnalysisLatest.status)}`}
                 /> 
               :
                 <p>_</p>
             }
-          </Component.DrawerItem>
-          <Component.Button
+          </Renderer.Component.DrawerItem>
+          <Renderer.Component.Button
             label='Analyze'
             onClick={this.analyzeImage}
             primary

@@ -1,5 +1,7 @@
-import { Store } from "@k8slens/extensions";
+import { Common } from "@k8slens/extensions";
 import { toJS, observable, action } from "mobx";
+
+const { Store } = Common;
 
 export type CarbonetesStoreModel = {
   enabled: boolean;
@@ -49,7 +51,7 @@ export class CarbonetesStore extends Store.ExtensionStore<CarbonetesStoreModel>{
   @observable analyses: AnalysesModel = [];
   @observable registries: RegistriesModel = [];
 
-  private constructor() {
+  constructor() {
     super({});
   }
 
@@ -106,4 +108,4 @@ export class CarbonetesStore extends Store.ExtensionStore<CarbonetesStoreModel>{
   }
 }
 
-export const carbonetesStore = CarbonetesStore.getInstance<CarbonetesStore>();
+export const carbonetesStore = CarbonetesStore.createInstance();

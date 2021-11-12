@@ -1,8 +1,10 @@
-import { Component } from "@k8slens/extensions";
+import { Renderer } from "@k8slens/extensions";
 import React from "react";
 import "./carbonetes-details.scss";
 import { getStatusStyle } from '../utils/helper';
 import { AnalysisModel } from '../preferences/carbonetes-preference-store';
+
+const { Component } = Renderer;
 
 type Props = {
   analysis: AnalysisModel

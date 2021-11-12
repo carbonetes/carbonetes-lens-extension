@@ -1,7 +1,9 @@
-import { LensMainExtension } from "@k8slens/extensions";
+import { Main } from "@k8slens/extensions";
 import { carbonetesStore } from "./src/preferences/carbonetes-preference-store";
 
-export default class ExampleExtensionMain extends LensMainExtension {
+const { LensExtension } = Main;
+
+export default class ExampleExtensionMain extends LensExtension {
   async onActivate() {
     console.log('Carbonetes Extension activated');
     await carbonetesStore.loadExtension(this);

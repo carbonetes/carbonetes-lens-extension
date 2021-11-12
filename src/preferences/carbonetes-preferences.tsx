@@ -1,9 +1,11 @@
-import { Component } from "@k8slens/extensions";
+import { Renderer } from "@k8slens/extensions";
 import React from "react";
 import { CarbonetesStore } from "./carbonetes-preference-store";
 import request from '../service/requests';
 import { observer } from "mobx-react";
 import "./carbonetes-preferences.scss";
+
+const { Component } = Renderer;
 
 type Props = {
   carbonetesStore : CarbonetesStore
