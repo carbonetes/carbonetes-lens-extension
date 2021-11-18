@@ -65,6 +65,7 @@ export class CarbonetesStore extends Store.ExtensionStore<CarbonetesStoreModel>{
     this.resetUser();
     this.resetAnalysis();
     this.analyses = [];
+    this.registries = [];
   };
 
   @action resetUser() {
