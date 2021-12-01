@@ -1,5 +1,5 @@
 import { Common } from "@k8slens/extensions";
-import { toJS, observable, action } from "mobx";
+import { observable,  makeObservable, action , toJS} from "mobx";
 
 const { Store } = Common;
 
@@ -52,7 +52,22 @@ export class CarbonetesStore extends Store.ExtensionStore<CarbonetesStoreModel>{
   @observable registries: RegistriesModel = [];
 
   constructor() {
-    super({});
+    super({
+      configName: "carbonetes-store",
+      defaults: {
+        enabled: false,
+        user: null,
+        analysis:   {
+          deployment: {},
+          result: {},
+          isAnalyzing: false,
+          isAnalyzed: false,
+        },
+        analyses: [],
+        registries: [],
+      }
+    });
+    // makeObservable(this);
   }
 
   @action signIn(user: UserModel) {

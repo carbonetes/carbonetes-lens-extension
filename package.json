@@ -1,7 +1,7 @@
 {
   "name": "@k8slens/carbonetes-lens-extension",
   "publisher": "Carbonetes",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Lens Carbonetes extension",
   "author": "Carbonetes (https://carbonetes.com/about-us)",
   "maintainers": [
@@ -26,7 +26,7 @@
     "clean": "rm -rf ./dist"
   },
   "dependencies": {
-    "axios": "^0.21.0",
+    "axios": "^0.21.4",
     "react-open-doodles": "^1.0.5"
   },
   "devDependencies": {

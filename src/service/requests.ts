@@ -1,4 +1,5 @@
 import axiosInstance from './axios'
+axiosInstance.defaults.timeout=20000;
 
 const CARBONETES_WRAPPER_API = 'https://api.carbonetes.com';
 
@@ -8,7 +9,7 @@ const request = {
     data
   ),
 
-  getAndReloadCompayRegistry: (config: any) => axiosInstance.get(
+  getAndReloadCompayRegistry: (config: any) =>  axiosInstance.get(
     CARBONETES_WRAPPER_API + '/api/v1/company_registry/by_uri',
     config
   ),
@@ -28,7 +29,8 @@ const request = {
 
   ),
   checkAnalysisResult: (config: any) => axiosInstance.get(
-    CARBONETES_WRAPPER_API + '/api/v1/analysis/full-tag',
+    // CARBONETES_WRAPPER_API + '/api/v1/analysis/full-tag',
+    CARBONETES_WRAPPER_API + '/api/v1/analysis/current-image',
     config
   ),
   analyzeImage: (data: any) => axiosInstance.post(

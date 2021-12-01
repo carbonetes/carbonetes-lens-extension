@@ -41,8 +41,9 @@ class CompleteAnalysis extends React.PureComponent<Props> {
       const malwareAnalysisSummary  = malwareAnalysis ? malwareAnalysis.scanResult : null;
 
       // License Finder
-      const licenseFinder           = result.licenseFinderLatest;
-      const licenseFinderSummary    = licenseFinder ? licenseFinder.imageDependencies.flatMap((dependency: any) => dependency.licenses).flatMap((license: any) => license.licenseName).filter((v: any, i: any, a: any) => a.indexOf(v) === i) : null;
+      const licenseFinder           = result.licenses;
+      // const licenseFinderSummary    = licenseFinder ? licenseFinder.imageDependencies.flatMap((dependency: any) => dependency.licenses).flatMap((license: any) => license.licenseName).filter((v: any, i: any, a: any) => a.indexOf(v) === i) : null;
+      const licenseFinderSummary    = licenseFinder ? licenseFinder.flatMap((license: any) => license.name).filter((v: any, i: any, a: any) => a.indexOf(v) === i) : null;
 
       // Secret Analysis
       const secretAnalysis          = result.secretAnalysisLatest;

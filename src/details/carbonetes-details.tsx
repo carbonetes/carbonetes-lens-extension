@@ -56,7 +56,7 @@ export class CarbonetesDetails extends React.Component<Props, State> {
     // Set initial state
     if (object.metadata.uid !== prevProps.deployment.object.metadata.uid) {
       if (carbonetesStore.enabled && carbonetesStore.registries.find((registry: any) => registry.registryUri.includes(image.registry))) {
-        this.getAnalysis();
+          this.getAnalysis();
       }
     }
   }
@@ -64,6 +64,14 @@ export class CarbonetesDetails extends React.Component<Props, State> {
   getAnalysis = () => {
     const { deployment, carbonetesStore } = this.props;
     const { object } = deployment;
+
+    if(carbonetesStore.analyses == null){
+      carbonetesStore.analyses = [];
+      carbonetesStore.resetAnalysis();
+      carbonetesStore.analysis.deployment = object;
+      this.checkAnalysisResult();
+      return
+    }
 
     const currentAnalysis = carbonetesStore.analyses.filter((analysis: any) => analysis.deployment.metadata.uid === object.metadata.uid);
     if (currentAnalysis.length > 0) {
@@ -91,13 +99,17 @@ export class CarbonetesDetails extends React.Component<Props, State> {
     };
 
     if (containers.length > 0) {
-      containers.map((container) => {
-        // Split the string that matches with the first '/'
-        const imageArray = container.image.split(/\/(.+)/);
+      const imageArray = containers[0].image.split(/\/(.+)/);
+      image.registry= imageArray[0];
+      image.name    = imageArray[1];
+
+      // containers.map((container) => {
+      //   // Split the string that matches with the first '/'
+      //   const imageArray = container.image.split(/\/(.+)/);
         
-        image.registry= imageArray[0];
-        image.name    = imageArray[1];
-      });
+      //   image.registry= imageArray[0];
+      //   image.name    = imageArray[1];
+      // });
     }
 
     const { registry, name } = image;
@@ -121,25 +133,29 @@ export class CarbonetesDetails extends React.Component<Props, State> {
     const imageName = image.name.split(':')[0];
     const imageTag  = image.name.split(':')[1];
 
-    request.getAndReloadCompayRegistry({
+    const params = {
       registryUri       : image.registry,
       repoImageTag      : image.name,
       username          : carbonetesStore.user.email,
       password          : carbonetesStore.user.password,
-      timeout           : 500,
+      timeout           : 20000,
       policyBundleUUID  : ''
-    }).then(response => {
+    }
+
+    request.getAndReloadCompayRegistry({params}).then(response => {
       if (response.data) {
         carbonetesStore.analysis.isAnalyzing = true;
 
         request.checkAnalysisResult({
-          headers: {
-            'Authorization': `Bearer ${carbonetesStore.user.auth.token}`
-          },
+          // headers: {
+          //   'Authorization': `Bearer ${carbonetesStore.user.auth.token}`
+          // },
           params: {
             registryUri : image.registry,
             repo        : imageName,
-            tag         : imageTag
+            tag         : imageTag,
+            username    : carbonetesStore.user.email,
+            password    : carbonetesStore.user.password
           }
         }).then(response => {
           const result = response.data;
@@ -230,7 +246,7 @@ export class CarbonetesDetails extends React.Component<Props, State> {
       repoImageTag      : image.name,
       username          : carbonetesStore.user.email,
       password          : carbonetesStore.user.password,
-      timeout           : 500,
+      timeout           : 10000,
       policyBundleUUID  : ''
     }).then(response => {
       carbonetesStore.analyses = newAnalyses;
@@ -250,6 +266,9 @@ export class CarbonetesDetails extends React.Component<Props, State> {
     const image = this.getImage(object);
 
     if (carbonetesStore.enabled && carbonetesStore.registries.find((registry: any) => registry.registryUri.includes(image.registry))) {
+      if(!carbonetesStore.analysis){
+        return (<p>No Analysis</p>)
+      }
       return(
         <div>
           <Renderer.Component.DrawerTitle title="Image" />
@@ -260,7 +279,7 @@ export class CarbonetesDetails extends React.Component<Props, State> {
             {image.name}
           </Renderer.Component.DrawerItem>
           <Renderer.Component.DrawerItem name="Analyzed At">
-            {
+            {  
               carbonetesStore.analysis.result && carbonetesStore.analysis.result.comprehensiveAnalysisLatest ? 
                 moment.unix(carbonetesStore.analysis.result.comprehensiveAnalysisLatest.whenAdded).fromNow()
               :
@@ -286,7 +305,7 @@ export class CarbonetesDetails extends React.Component<Props, State> {
             disabled={carbonetesStore.analysis.isAnalyzed && (carbonetesStore.analysis.result && carbonetesStore.analysis.result.comprehensiveAnalysisLatest)}
           />
           <CompleteAnalysis analysis={carbonetesStore.analysis} isAnalyzing={carbonetesStore.analysis.isAnalyzing}/>
-          <PolicyEvaluation analysis={carbonetesStore.analysis} />
+          <PolicyEvaluation analysis={carbonetesStore.analysis} isAnalyzing={carbonetesStore.analysis.isAnalyzing} />
           <Vulnerabilities 
             vulnerabilities={
               carbonetesStore.analysis.result && carbonetesStore.analysis.result.imageAnalysisLatest ? 

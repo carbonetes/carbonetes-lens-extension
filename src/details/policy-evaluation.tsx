@@ -8,6 +8,7 @@ const { Component } = Renderer;
 
 type Props = {
   analysis: AnalysisModel
+  isAnalyzing: boolean
 }
 
 class PolicyEvaluation extends React.PureComponent<Props> {
@@ -42,7 +43,7 @@ class PolicyEvaluation extends React.PureComponent<Props> {
   }
 
   render() {
-    const { analysis } = this.props;
+    const { analysis, isAnalyzing } = this.props;
     const { isAnalyzed } = analysis;
 
     let policyEvaluation: any = {}
@@ -61,6 +62,9 @@ class PolicyEvaluation extends React.PureComponent<Props> {
             (policyEvaluation && policyEvaluation.environment) ? 
               policyEvaluation.environment
             :
+            isAnalyzing ?
+              <Component.Spinner/>
+            :
               <p>_</p>
           }
         </Component.DrawerItem>
@@ -69,11 +73,14 @@ class PolicyEvaluation extends React.PureComponent<Props> {
             (policyEvaluation && policyEvaluation.policyBundle) ? 
               policyEvaluation.policyBundle.name
             :
+            isAnalyzing ?
+            <Component.Spinner/>
+            :
               <p>_</p>
           }
         </Component.DrawerItem>
         <Component.DrawerItem name="Policy Result">
-          {
+        {
             (policyEvaluation && policyEvaluation.policyEvaluationLatest) ? 
               <Component.Badge
                 label={policyEvaluation.policyEvaluationLatest.policyResult}
@@ -83,6 +90,9 @@ class PolicyEvaluation extends React.PureComponent<Props> {
                   </>  
                 )}
               />
+            :
+            isAnalyzing ?
+            <Component.Spinner/>
             :
               <p>_</p>
           }
@@ -98,6 +108,9 @@ class PolicyEvaluation extends React.PureComponent<Props> {
                   </>  
                 )}
               />
+            :
+            isAnalyzing ?
+            <Component.Spinner/>
             :
               <p>_</p>
           }
@@ -128,6 +141,9 @@ class PolicyEvaluation extends React.PureComponent<Props> {
                   })
                 }
               </div>
+            :
+            isAnalyzing ?
+            <Component.Spinner/>
             :
               <p>_</p>
           }
