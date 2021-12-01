@@ -1,7 +1,7 @@
 {
   "name": "@k8slens/carbonetes-lens-extension",
   "publisher": "Carbonetes",
-  "version": "0.2.0",
+  "version": "0.1.1",
   "description": "Lens Carbonetes extension",
   "author": "Carbonetes (https://carbonetes.com/about-us)",
   "maintainers": [
