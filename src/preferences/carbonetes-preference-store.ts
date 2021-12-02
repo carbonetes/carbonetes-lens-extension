@@ -1,5 +1,5 @@
 import { Common } from "@k8slens/extensions";
-import { observable,  makeObservable, action , toJS} from "mobx";
+import { observable, makeObservable, action } from "mobx";
 
 const { Store } = Common;
 
@@ -34,6 +34,7 @@ export type RegistriesModel = RegistriesModel[]
 
 export class CarbonetesStore extends Store.ExtensionStore<CarbonetesStoreModel>{
   @observable enabled: boolean = false;
+
   @observable user: UserModel = {
     email: '',
     password: '',
@@ -42,13 +43,16 @@ export class CarbonetesStore extends Store.ExtensionStore<CarbonetesStoreModel>{
       token: ''
     }
   }
+
   @observable analysis: AnalysisModel = {
     deployment: {},
     result: {},
     isAnalyzing: false,
     isAnalyzed: false,
   }
+
   @observable analyses: AnalysesModel = [];
+
   @observable registries: RegistriesModel = [];
 
   constructor() {
@@ -67,43 +71,43 @@ export class CarbonetesStore extends Store.ExtensionStore<CarbonetesStoreModel>{
         registries: [],
       }
     });
-    // makeObservable(this);
+    makeObservable(this);
   }
 
-  @action signIn(user: UserModel) {
-    this.enabled = true;
-    this.user = user;
-  };
+  // @action signIn(user: UserModel) {
+  //   this.enabled = true;
+  //   this.user = user;
+  // };
 
-  @action signOut() {
-    this.enabled = false;
-    this.resetUser();
-    this.resetAnalysis();
-    this.analyses = [];
-    this.registries = [];
-  };
+  // @action signOut() {
+  //   this.enabled = false;
+  //   this.resetUser();
+  //   this.resetAnalysis();
+  //   this.analyses = [];
+  //   this.registries = [];
+  // };
 
-  @action resetUser() {
-    this.user = {
-      email: '',
-      password: '',
-      auth: {
-        username: '',
-        token: ''
-      }
-    };
-  }
+  // @action resetUser() {
+  //   this.user = {
+  //     email: '',
+  //     password: '',
+  //     auth: {
+  //       username: '',
+  //       token: ''
+  //     }
+  //   };
+  // }
 
-  @action resetAnalysis() {
-    this.analysis = {
-      deployment: {},
-      result: {},
-      isAnalyzing: false,
-      isAnalyzed: false,
-    };
-  }
+  // @action resetAnalysis() {
+  //   this.analysis = {
+  //     deployment: {},
+  //     result: {},
+  //     isAnalyzing: false,
+  //     isAnalyzed: false,
+  //   };
+  // }
 
-  @action protected fromStore({ enabled, user, analysis, analyses, registries }: CarbonetesStoreModel): void {
+  protected fromStore({ enabled, user, analysis, analyses, registries }: CarbonetesStoreModel): void {
     this.enabled = enabled;
     this.user = user;
     this.analysis = analysis;
@@ -112,16 +116,12 @@ export class CarbonetesStore extends Store.ExtensionStore<CarbonetesStoreModel>{
   }
 
   toJSON(): CarbonetesStoreModel {
-    return toJS({
+    return {
       enabled: this.enabled,
       user: this.user,
       analysis: this.analysis,
       analyses: this.analyses,
       registries: this.registries
-    }, {
-      recurseEverything: true
-    });
+    };
   }
 }
-
-export const carbonetesStore = CarbonetesStore.createInstance();

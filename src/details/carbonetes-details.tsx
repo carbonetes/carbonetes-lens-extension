@@ -18,7 +18,6 @@ export interface CarbonetesDetailsProps extends Renderer.Component.KubeObjectDet
 }
 
 type Props = {
-  carbonetesStore: CarbonetesStore,
   deployment : Renderer.Component.KubeObjectDetailsProps<Renderer.K8sApi.Deployment>
 }
 
@@ -38,53 +37,63 @@ export class CarbonetesDetails extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    const { deployment, carbonetesStore } = this.props;
+    const { deployment } = this.props;
     const { object } = deployment;
     const image = this.getImage(object);
 
-    if (carbonetesStore.enabled && carbonetesStore.registries.find((registry: any) => registry.registryUri.includes(image.registry))) {
+    if (CarbonetesStore.getInstance().enabled && CarbonetesStore.getInstance().registries.find((registry: any) => registry.registryUri.includes(image.registry))) {
       this.getAnalysis();
     }
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
-    const { deployment, carbonetesStore } = this.props;
+    const { deployment } = this.props;
     const { object } = deployment;
     const image = this.getImage(object);
 
     // If Deployment metadata UID changes
     // Set initial state
     if (object.metadata.uid !== prevProps.deployment.object.metadata.uid) {
-      if (carbonetesStore.enabled && carbonetesStore.registries.find((registry: any) => registry.registryUri.includes(image.registry))) {
+      if (CarbonetesStore.getInstance().enabled && CarbonetesStore.getInstance().registries.find((registry: any) => registry.registryUri.includes(image.registry))) {
           this.getAnalysis();
       }
     }
   }
 
   getAnalysis = () => {
-    const { deployment, carbonetesStore } = this.props;
+    const { deployment } = this.props;
     const { object } = deployment;
 
-    if(carbonetesStore.analyses == null){
-      carbonetesStore.analyses = [];
-      carbonetesStore.resetAnalysis();
-      carbonetesStore.analysis.deployment = object;
+    if(CarbonetesStore.getInstance().analyses == null){
+      CarbonetesStore.getInstance().analyses = [];
+      CarbonetesStore.getInstance().analysis = {
+        deployment: {},
+        result: {},
+        isAnalyzing: false,
+        isAnalyzed: false,
+      };
+      CarbonetesStore.getInstance().analysis.deployment = object;
       this.checkAnalysisResult();
       return
     }
 
-    const currentAnalysis = carbonetesStore.analyses.filter((analysis: any) => analysis.deployment.metadata.uid === object.metadata.uid);
+    const currentAnalysis = CarbonetesStore.getInstance().analyses.filter((analysis: any) => analysis.deployment.metadata.uid === object.metadata.uid);
     if (currentAnalysis.length > 0) {
       const analyzed  = currentAnalysis.find((analysis: any) => analysis.isAnalyzed === true);
       const analyzing = currentAnalysis.find((analysis: any) => analysis.isAnalyzed === false);
       if (analyzed) {
-        carbonetesStore.analysis = analyzed;
+        CarbonetesStore.getInstance().analysis = analyzed;
       } else {
-        carbonetesStore.analysis = analyzing;
+        CarbonetesStore.getInstance().analysis = analyzing;
       }
     } else {
-      carbonetesStore.resetAnalysis();
-      carbonetesStore.analysis.deployment = object;
+      CarbonetesStore.getInstance().analysis = {
+        deployment: {},
+        result: {},
+        isAnalyzing: false,
+        isAnalyzed: false,
+      };
+      CarbonetesStore.getInstance().analysis.deployment = object;
       this.checkAnalysisResult();
     }
   }
@@ -126,7 +135,7 @@ export class CarbonetesDetails extends React.Component<Props, State> {
 
   // Check image if image is already been analyzed
   checkAnalysisResult =  () => {
-    const { deployment, carbonetesStore } = this.props;
+    const { deployment } = this.props;
     const { object } = deployment;
 
     const image     = this.getImage(object);
@@ -136,36 +145,36 @@ export class CarbonetesDetails extends React.Component<Props, State> {
     const params = {
       registryUri       : image.registry,
       repoImageTag      : image.name,
-      username          : carbonetesStore.user.email,
-      password          : carbonetesStore.user.password,
+      username          : CarbonetesStore.getInstance().user.email,
+      password          : CarbonetesStore.getInstance().user.password,
       timeout           : 20000,
       policyBundleUUID  : ''
     }
 
     request.getAndReloadCompayRegistry({params}).then(response => {
       if (response.data) {
-        carbonetesStore.analysis.isAnalyzing = true;
+        CarbonetesStore.getInstance().analysis.isAnalyzing = true;
 
         request.checkAnalysisResult({
           // headers: {
-          //   'Authorization': `Bearer ${carbonetesStore.user.auth.token}`
+          //   'Authorization': `Bearer ${CarbonetesStore.getInstance().user.auth.token}`
           // },
           params: {
             registryUri : image.registry,
             repo        : imageName,
             tag         : imageTag,
-            username    : carbonetesStore.user.email,
-            password    : carbonetesStore.user.password
+            username    : CarbonetesStore.getInstance().user.email,
+            password    : CarbonetesStore.getInstance().user.password
           }
         }).then(response => {
           const result = response.data;
 
-          carbonetesStore.analysis.deployment   = object;
-          carbonetesStore.analysis.result       = result;
-          carbonetesStore.analysis.isAnalyzed   = true;
-          carbonetesStore.analysis.isAnalyzing  = false;
+          CarbonetesStore.getInstance().analysis.deployment   = object;
+          CarbonetesStore.getInstance().analysis.result       = result;
+          CarbonetesStore.getInstance().analysis.isAnalyzed   = true;
+          CarbonetesStore.getInstance().analysis.isAnalyzing  = false;
 
-          const newAnalyses = carbonetesStore.analyses.filter((analysis) => (analysis.result.imageDigest !== result.imageDigest || analysis.deployment.metadata.uid !== object.metadata.uid));    
+          const newAnalyses = CarbonetesStore.getInstance().analyses.filter((analysis) => (analysis.result.imageDigest !== result.imageDigest || analysis.deployment.metadata.uid !== object.metadata.uid));    
     
           newAnalyses.push({
             deployment  : object,
@@ -174,12 +183,17 @@ export class CarbonetesDetails extends React.Component<Props, State> {
             isAnalyzed  : true
           });
     
-          carbonetesStore.analyses = newAnalyses;
+          CarbonetesStore.getInstance().analyses = newAnalyses;
         }).catch(error => {
           Renderer.Component.Notifications.error(
             <div>{error.response.data}.</div>
           )
-          carbonetesStore.resetAnalysis();
+          CarbonetesStore.getInstance().analysis = {
+            deployment: {},
+            result: {},
+            isAnalyzing: false,
+            isAnalyzed: false,
+          };
         });
       }
     }).catch(error => {
@@ -191,14 +205,14 @@ export class CarbonetesDetails extends React.Component<Props, State> {
 
   // Fetches analysis result in Carbonetes API
   getAnalysisResult =  (param: {}) => {
-    const { deployment, carbonetesStore } = this.props;
+    const { deployment } = this.props;
     const { object } = deployment;
 
     request.getAnalysisResult({
       ...param
     }).then(response => {
       const result      = response.data
-      const newAnalyses = carbonetesStore.analyses.filter((analysis) => (analysis.result.imageDigest !== result.imageDigest || analysis.deployment.metadata.uid !== object.metadata.uid));
+      const newAnalyses = CarbonetesStore.getInstance().analyses.filter((analysis) => (analysis.result.imageDigest !== result.imageDigest || analysis.deployment.metadata.uid !== object.metadata.uid));
 
       newAnalyses.push({
         deployment  : object,
@@ -207,26 +221,26 @@ export class CarbonetesDetails extends React.Component<Props, State> {
         isAnalyzed  : true
       })
 
-      carbonetesStore.analysis.result     = result;
-      carbonetesStore.analysis.isAnalyzed = true;
-      carbonetesStore.analyses            = newAnalyses;
+      CarbonetesStore.getInstance().analysis.result     = result;
+      CarbonetesStore.getInstance().analysis.isAnalyzed = true;
+      CarbonetesStore.getInstance().analyses            = newAnalyses;
 
     }).catch(error => {
       Renderer.Component.Notifications.error(
         <div>{error.response.data}.</div>
       )
     }).finally(() => {
-      carbonetesStore.analysis.isAnalyzing = false;
+      CarbonetesStore.getInstance().analysis.isAnalyzing = false;
     });
   }
 
   // Analyzes image using Carbonetes API
   analyzeImage = () => {
-    const { deployment, carbonetesStore } = this.props;
+    const { deployment } = this.props;
     const { object } = deployment;
 
     const image       = this.getImage(object);    
-    const newAnalyses = carbonetesStore.analyses.filter((analysis) => analysis.deployment.metadata.uid !== object.metadata.uid);    
+    const newAnalyses = CarbonetesStore.getInstance().analyses.filter((analysis) => analysis.deployment.metadata.uid !== object.metadata.uid);    
 
     newAnalyses.push({
       deployment  : object,
@@ -235,38 +249,43 @@ export class CarbonetesDetails extends React.Component<Props, State> {
       isAnalyzed  : false
     });
 
-    carbonetesStore.analysis.deployment   = object;
-    carbonetesStore.analysis.result       = {};
-    carbonetesStore.analysis.isAnalyzing  = true;
-    carbonetesStore.analysis.isAnalyzed   = false;
-    // carbonetesStore.analyses              = newAnalyses;
+    CarbonetesStore.getInstance().analysis.deployment   = object;
+    CarbonetesStore.getInstance().analysis.result       = {};
+    CarbonetesStore.getInstance().analysis.isAnalyzing  = true;
+    CarbonetesStore.getInstance().analysis.isAnalyzed   = false;
+    // CarbonetesStore.getInstance().analyses              = newAnalyses;
 
     request.analyzeImage({
       registryUri       : image.registry,
       repoImageTag      : image.name,
-      username          : carbonetesStore.user.email,
-      password          : carbonetesStore.user.password,
+      username          : CarbonetesStore.getInstance().user.email,
+      password          : CarbonetesStore.getInstance().user.password,
       timeout           : 10000,
       policyBundleUUID  : ''
     }).then(response => {
-      carbonetesStore.analyses = newAnalyses;
+      CarbonetesStore.getInstance().analyses = newAnalyses;
 
       this.getAnalysisResult(response.data);
     }).catch(error => {
       Renderer.Component.Notifications.error(
         <div>{error.response.data}.</div>
       )
-      carbonetesStore.resetAnalysis();
+      CarbonetesStore.getInstance().analysis = {
+        deployment: {},
+        result: {},
+        isAnalyzing: false,
+        isAnalyzed: false,
+      };
     });
   }
 
   render() {
-    const { deployment, carbonetesStore } = this.props;
+    const { deployment } = this.props;
     const { object } = deployment;
     const image = this.getImage(object);
 
-    if (carbonetesStore.enabled && carbonetesStore.registries.find((registry: any) => registry.registryUri.includes(image.registry))) {
-      if(!carbonetesStore.analysis){
+    if (CarbonetesStore.getInstance().enabled && CarbonetesStore.getInstance().registries.find((registry: any) => registry.registryUri.includes(image.registry))) {
+      if(!CarbonetesStore.getInstance().analysis){
         return (<p>No Analysis</p>)
       }
       return(
@@ -280,18 +299,18 @@ export class CarbonetesDetails extends React.Component<Props, State> {
           </Renderer.Component.DrawerItem>
           <Renderer.Component.DrawerItem name="Analyzed At">
             {  
-              carbonetesStore.analysis.result && carbonetesStore.analysis.result.comprehensiveAnalysisLatest ? 
-                moment.unix(carbonetesStore.analysis.result.comprehensiveAnalysisLatest.whenAdded).fromNow()
+              CarbonetesStore.getInstance().analysis.result && CarbonetesStore.getInstance().analysis.result.comprehensiveAnalysisLatest ? 
+                moment.unix(CarbonetesStore.getInstance().analysis.result.comprehensiveAnalysisLatest.whenAdded).fromNow()
               :
                 <p>_</p>
             }
           </Renderer.Component.DrawerItem>
           <Renderer.Component.DrawerItem name="Status">
             {
-              carbonetesStore.analysis.result && carbonetesStore.analysis.result.comprehensiveAnalysisLatest ? 
+              CarbonetesStore.getInstance().analysis.result && CarbonetesStore.getInstance().analysis.result.comprehensiveAnalysisLatest ? 
                 <Renderer.Component.Badge
-                  label={getAnalysisStatus(carbonetesStore.analysis.result.comprehensiveAnalysisLatest.status)}
-                  className={`whiteText ${getStatusStyle(carbonetesStore.analysis.result.comprehensiveAnalysisLatest.status)}`}
+                  label={getAnalysisStatus(CarbonetesStore.getInstance().analysis.result.comprehensiveAnalysisLatest.status)}
+                  className={`whiteText ${getStatusStyle(CarbonetesStore.getInstance().analysis.result.comprehensiveAnalysisLatest.status)}`}
                 /> 
               :
                 <p>_</p>
@@ -301,15 +320,15 @@ export class CarbonetesDetails extends React.Component<Props, State> {
             label='Analyze'
             onClick={this.analyzeImage}
             primary
-            waiting={carbonetesStore.analysis.isAnalyzing}
-            disabled={carbonetesStore.analysis.isAnalyzed && (carbonetesStore.analysis.result && carbonetesStore.analysis.result.comprehensiveAnalysisLatest)}
+            waiting={CarbonetesStore.getInstance().analysis.isAnalyzing}
+            disabled={CarbonetesStore.getInstance().analysis.isAnalyzed && (CarbonetesStore.getInstance().analysis.result && CarbonetesStore.getInstance().analysis.result.comprehensiveAnalysisLatest)}
           />
-          <CompleteAnalysis analysis={carbonetesStore.analysis} isAnalyzing={carbonetesStore.analysis.isAnalyzing}/>
-          <PolicyEvaluation analysis={carbonetesStore.analysis} isAnalyzing={carbonetesStore.analysis.isAnalyzing} />
+          <CompleteAnalysis analysis={CarbonetesStore.getInstance().analysis} isAnalyzing={CarbonetesStore.getInstance().analysis.isAnalyzing}/>
+          <PolicyEvaluation analysis={CarbonetesStore.getInstance().analysis} isAnalyzing={CarbonetesStore.getInstance().analysis.isAnalyzing} />
           <Vulnerabilities 
             vulnerabilities={
-              carbonetesStore.analysis.result && carbonetesStore.analysis.result.imageAnalysisLatest ? 
-                carbonetesStore.analysis.result.imageAnalysisLatest.vulnerabilities
+              CarbonetesStore.getInstance().analysis.result && CarbonetesStore.getInstance().analysis.result.imageAnalysisLatest ? 
+                CarbonetesStore.getInstance().analysis.result.imageAnalysisLatest.vulnerabilities
               : 
                 []
             } 

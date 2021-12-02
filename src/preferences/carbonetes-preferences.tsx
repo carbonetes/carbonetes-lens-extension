@@ -2,14 +2,12 @@ import { Renderer } from "@k8slens/extensions";
 import React from "react";
 import { CarbonetesStore } from "./carbonetes-preference-store";
 import request from '../service/requests';
-import { observer, inject } from "mobx-react";
+import { observer } from "mobx-react";
 import "./carbonetes-preferences.scss";
 
 const { Component } = Renderer;
 
-type Props = {
-  carbonetesStore : CarbonetesStore
-}
+type Props = {}
 
 type State = {
   email           : string,
@@ -20,7 +18,7 @@ type State = {
 
 @observer
 export class CarbonetesPreferenceInput extends React.Component<Props, State> {
-  constructor(props: { carbonetesStore: CarbonetesStore; } | Readonly<{ carbonetesStore: CarbonetesStore; }>) {
+  constructor(props: { } | Readonly<{ }>) {
     super(props);
     this.state = {
       email         : '',
@@ -37,7 +35,6 @@ export class CarbonetesPreferenceInput extends React.Component<Props, State> {
   }
 
   signIn = () => {
-    const { carbonetesStore } = this.props;
     const { email, password } = this.state;
 
     if (email === '' || password === '') {
@@ -61,17 +58,18 @@ export class CarbonetesPreferenceInput extends React.Component<Props, State> {
           password: password,
         };
 
-        carbonetesStore.signIn(user);
+        CarbonetesStore.getInstance().enabled = true;
+        CarbonetesStore.getInstance().user = user;
 
         request.getRegistries({
           headers: {
-            'Authorization': `Bearer ${carbonetesStore.user.auth.token}`
+            'Authorization': `Bearer ${CarbonetesStore.getInstance().user.auth.token}`
           },
           params: {
             email
           }
         }).then(response => {
-          carbonetesStore.registries = response.data;
+          CarbonetesStore.getInstance().registries = response.data;
         }).catch(error => {
           Component.Notifications.error(
             <div>{error.response.data}.</div>
@@ -90,9 +88,24 @@ export class CarbonetesPreferenceInput extends React.Component<Props, State> {
   }
 
   signOut = () => {
-    const { carbonetesStore } = this.props;
-
-    carbonetesStore.signOut();
+    CarbonetesStore.getInstance().enabled = false;
+    CarbonetesStore.getInstance().user = {
+      email: '',
+      password: '',
+      auth: {
+        username: '',
+        token: ''
+      }
+    }
+    CarbonetesStore.getInstance().analysis = {
+      deployment: {},
+      result: {},
+      isAnalyzing: false,
+      isAnalyzed: false,
+    };
+    CarbonetesStore.getInstance().analyses = [];
+    CarbonetesStore.getInstance().registries = [];
+    
     this.setState({
       email: '',
       password: ''
@@ -100,15 +113,14 @@ export class CarbonetesPreferenceInput extends React.Component<Props, State> {
   }
 
   render() {
-    const { carbonetesStore } = this.props
     const { email, isSignInError, isSigningIn, password } = this.state;
 
     return (
       <div className="flex column gaps">
         {
-          carbonetesStore.enabled ? 
+          CarbonetesStore.getInstance().enabled ? 
             <span>
-              {`Currently signed in as ${carbonetesStore.user.email}`}
+              {`Currently signed in as ${CarbonetesStore.getInstance().user.email}`}
             </span>
           :
             <>
@@ -148,18 +160,18 @@ export class CarbonetesPreferenceInput extends React.Component<Props, State> {
             onClick={this.signIn}
             primary
             waiting={isSigningIn}
-            hidden={carbonetesStore.enabled}
+            hidden={CarbonetesStore.getInstance().enabled}
           />
           <Component.Button
             label='Sign Out'
             primary
             onClick={this.signOut}
-            hidden={!carbonetesStore.enabled}
+            hidden={!CarbonetesStore.getInstance().enabled}
           />
         </div>
         <span className="smallText">
           {
-            !carbonetesStore.enabled &&
+            !CarbonetesStore.getInstance().enabled &&
               <>Don't have an account? Click <a href="https://console.carbonetes.com/register/" target="_blank">here</a> to register.<br/></>
           }
           To know more about Carbonetes click here <a href="https://https://carbonetes.com/" target="_blank">here</a>.
