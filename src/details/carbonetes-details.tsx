@@ -147,7 +147,7 @@ export class CarbonetesDetails extends React.Component<Props, State> {
       repoImageTag      : image.name,
       username          : CarbonetesStore.getInstance().user.email,
       password          : CarbonetesStore.getInstance().user.password,
-      timeout           : 20000,
+      timeout           : 2700000,
       policyBundleUUID  : ''
     }
 
@@ -260,7 +260,7 @@ export class CarbonetesDetails extends React.Component<Props, State> {
       repoImageTag      : image.name,
       username          : CarbonetesStore.getInstance().user.email,
       password          : CarbonetesStore.getInstance().user.password,
-      timeout           : 10000,
+      timeout           : 2700000,
       policyBundleUUID  : ''
     }).then(response => {
       CarbonetesStore.getInstance().analyses = newAnalyses;

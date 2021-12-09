@@ -233,7 +233,7 @@ class CompleteAnalysis extends React.PureComponent<Props> {
           />
         )
       } else {
-        component.push(<p>No licenses found</p>);
+        component.push(<p> - </p>);
       }
     } else if (analysis.analyzer === 'Secrets') {
       const secretsCount = analysis.summary.length;
@@ -278,7 +278,7 @@ class CompleteAnalysis extends React.PureComponent<Props> {
           />
         )
       } else {
-        component.push(<p>No licenses found</p>);
+        component.push(<p>No licenses found.</p>);
       }
     }
 

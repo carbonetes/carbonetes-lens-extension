@@ -1,8 +1,8 @@
 import axios  from 'axios';
-axios.defaults.timeout = 200000;
+axios.defaults.timeout = 2700000;
 
 const axiosInstance = axios.create({
-  timeout: 200000,
+  timeout: 2700000,
   headers : {
     'Access-Control-Allow-Origin'   : '*',
     'Access-Control-Allow-Headers'  : 'Origin, X-Requested-With, Content-Type',

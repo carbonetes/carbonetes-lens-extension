@@ -1,5 +1,5 @@
 import axiosInstance from './axios'
-axiosInstance.defaults.timeout=20000;
+axiosInstance.defaults.timeout=2700000;
 
 const CARBONETES_WRAPPER_API = 'https://api.carbonetes.com';
 
