@@ -120,7 +120,8 @@ export class CarbonetesPreferenceInput extends React.Component<Props, State> {
         {
           CarbonetesStore.getInstance().enabled ? 
             <span>
-              {`Currently signed in as ${CarbonetesStore.getInstance().user.email}`}
+              {`Currently signed in as ${!CarbonetesStore.getInstance().user?this.state.email:CarbonetesStore.getInstance().user.email}`}
+              {/* {`Currently signed in as ${displayEmail}`}   */}
             </span>
           :
             <>
