@@ -8,6 +8,10 @@
     {
       "name": "erickdelacruz",
       "email": "erick.delacruz@hoolisoftware.com"
+    },
+    {
+      "name": "kirkalynsantos",
+      "email": "kirk.santos@carbonetes.com"
     }
   ],
   "repository": {
@@ -16,7 +20,7 @@
     "directory": "carbonetes-lens-extension"
   },
   "engines": {
-    "lens": "^5.0.0-beta.7"
+    "lens": "^6.4.10"
   },
   "main": "dist/main.js",
   "renderer": "dist/renderer.js",
@@ -30,7 +34,7 @@
     "react-open-doodles": "^1.0.5"
   },
   "devDependencies": {
-    "@k8slens/extensions": "^5.3.1",
+    "@k8slens/extensions": "^6.4.10",
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.35",
     "css-loader": "^5.0.1",
@@ -40,8 +44,9 @@
     "sass": "^1.29.0",
     "sass-loader": "^10.1.0",
     "style-loader": "^2.0.0",
-    "ts-loader": "^8.0.4",
-    "typescript": "^4.0.3",
+    "ts-loader": "^8.2.0",
+    "ts-node": "^2.0.0",
+    "typescript": "^4.5.5",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.11"
   },
