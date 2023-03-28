@@ -1,7 +1,7 @@
 import { Common } from "@k8slens/extensions";
 import { observable, makeObservable, action } from "mobx";
 
-const { Store } = Common;
+// const { Store } = Common;
 
 export type CarbonetesStoreModel = {
   enabled: boolean;
@@ -32,7 +32,7 @@ export type AnalysesModel = AnalysisModel[]
 export type RegistriesModel = RegistriesModel[]
 
 
-export class CarbonetesStore extends Store.ExtensionStore<CarbonetesStoreModel>{
+export class CarbonetesStore extends Common.Store.ExtensionStore<CarbonetesStoreModel>{
   @observable enabled: boolean = false;
 
   @observable user: UserModel = {

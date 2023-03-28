@@ -20,7 +20,7 @@
     "directory": "carbonetes-lens-extension"
   },
   "engines": {
-    "lens": "^6.4.10"
+    "lens": "^6.0.1"
   },
   "main": "dist/main.js",
   "renderer": "dist/renderer.js",
@@ -34,7 +34,7 @@
     "react-open-doodles": "^1.0.5"
   },
   "devDependencies": {
-    "@k8slens/extensions": "^6.4.10",
+    "@k8slens/extensions": "^6.0.1",
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.35",
     "css-loader": "^5.0.1",
